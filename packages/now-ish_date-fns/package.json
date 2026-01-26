@@ -1,0 +1,20 @@
+{
+  "name": "@ver0/now-ish_date-fns",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./src/index.js"
+    }
+  },
+  "dependencies": {
+    "@date-fns/utc": "^2.1.1",
+    "date-fns": "^4.1.0"
+  },
+  "peerDependencies": {
+    "@ver0/now-ish": "workspace:*"
+  }
+}

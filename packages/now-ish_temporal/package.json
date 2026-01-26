@@ -1,0 +1,16 @@
+{
+  "name": "@ver0/now-ish_temporal",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./src/index.js"
+    }
+  },
+  "peerDependencies": {
+    "@ver0/now-ish": "workspace:*"
+  }
+}
