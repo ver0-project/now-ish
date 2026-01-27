@@ -8,6 +8,11 @@
 		"forceConsistentCasingInFileNames": true,
 		"skipLibCheck": true,
 
+		"baseUrl": ".",
+		"paths": {
+			"@ver0/*": ["packages/*/src/index.ts"]
+		},
+
 		"strict": true,
 		"noImplicitAny": true,
 		"strictNullChecks": true,
