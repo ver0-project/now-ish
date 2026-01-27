@@ -23,7 +23,7 @@
 		"@ver0/now-ish": "workspace:*"
 	},
 	"dependencies": {
-		"@date-fns/utc": "^2.1.1",
+		"@date-fns/tz": "^1.4.1",
 		"date-fns": "^4.1.0"
 	},
 	"devDependencies": {
