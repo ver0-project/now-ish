@@ -13,6 +13,12 @@ const cfg = [
 		vitest: true,
 	}),
 	{
+		files: ['**/*.ts'],
+		rules: {
+			'n/no-missing-import': 'off',
+		},
+	},
+	{
 		files: ['README.md'],
 		language: 'markdown/gfm',
 	},
