@@ -6,8 +6,7 @@ import {units, now} from './units.js';
  * Helper to create TZDate from ISO string in UTC.
  * Appends 'Z' to ensure the string is interpreted as UTC.
  */
-function tz(iso: string): TZDate {
-	// Ensure ISO string is treated as UTC by appending Z if not present
+function parseUTC(iso: string): TZDate {
 	const utcIso = iso.endsWith('Z') ? iso : `${iso}Z`;
 	return new TZDate(utcIso, 'UTC');
 }
@@ -16,7 +15,7 @@ function tz(iso: string): TZDate {
  * Helper to format TZDate for assertions.
  * Matches Temporal's toPlainDateTime().toString() format.
  */
-function fmt(date: TZDate): string {
+function formatForAssertion(date: TZDate): string {
 	const y = date.getFullYear();
 	const mo = String(date.getMonth() + 1).padStart(2, '0');
 	const d = String(date.getDate()).padStart(2, '0');
@@ -25,7 +24,6 @@ function fmt(date: TZDate): string {
 	const s = String(date.getSeconds()).padStart(2, '0');
 	const ms = date.getMilliseconds();
 	if (ms > 0) {
-		// Trim trailing zeros to match Temporal format: 500 -> ".5", 123 -> ".123"
 		const msStr = String(ms).padStart(3, '0').replace(/0+$/, '');
 		return `${y}-${mo}-${d}T${h}:${m}:${s}.${msStr}`;
 	}
@@ -83,9 +81,9 @@ describe('millisecond (ms)', () => {
 			{name: 'add zero', input: '2024-03-15T10:30:00', amount: 0, expected: '2024-03-15T10:30:00'},
 		];
 
-		it.each(cases)('$name', (c: AddCase) => {
-			const result = unit.add(tz(c.input), c.amount, ctx);
-			expect(fmt(result)).toBe(c.expected);
+		it.each(cases)('$name', (tc: AddCase) => {
+			const result = unit.add(parseUTC(tc.input), tc.amount, ctx);
+			expect(formatForAssertion(result)).toBe(tc.expected);
 		});
 	});
 
@@ -95,22 +93,21 @@ describe('millisecond (ms)', () => {
 			{name: 'at boundary', input: '2024-03-15T10:30:00', expected: '2024-03-15T10:30:00'},
 		];
 
-		it.each(cases)('$name', (c: RoundCase) => {
-			const result = unit['round-down'](tz(c.input), ctx);
-			expect(fmt(result)).toBe(c.expected);
+		it.each(cases)('$name', (tc: RoundCase) => {
+			const result = unit['round-down'](parseUTC(tc.input), ctx);
+			expect(formatForAssertion(result)).toBe(tc.expected);
 		});
 	});
 
 	describe('round-up', () => {
 		const cases: RoundCase[] = [
-			// Date has millisecond precision, so round-up returns same value
 			{name: 'preserves milliseconds', input: '2024-03-15T10:30:00.500', expected: '2024-03-15T10:30:00.5'},
 			{name: 'at boundary', input: '2024-03-15T10:30:00', expected: '2024-03-15T10:30:00'},
 		];
 
-		it.each(cases)('$name', (c: RoundCase) => {
-			const result = unit['round-up'](tz(c.input), ctx);
-			expect(fmt(result)).toBe(c.expected);
+		it.each(cases)('$name', (tc: RoundCase) => {
+			const result = unit['round-up'](parseUTC(tc.input), ctx);
+			expect(formatForAssertion(result)).toBe(tc.expected);
 		});
 	});
 });
@@ -126,9 +123,9 @@ describe('second (s)', () => {
 			{name: 'subtract', input: '2024-03-15T10:30:00', amount: -30, expected: '2024-03-15T10:29:30'},
 		];
 
-		it.each(cases)('$name', (c: AddCase) => {
-			const result = unit.add(tz(c.input), c.amount, ctx);
-			expect(fmt(result)).toBe(c.expected);
+		it.each(cases)('$name', (tc: AddCase) => {
+			const result = unit.add(parseUTC(tc.input), tc.amount, ctx);
+			expect(formatForAssertion(result)).toBe(tc.expected);
 		});
 	});
 
@@ -138,9 +135,9 @@ describe('second (s)', () => {
 			{name: 'at boundary', input: '2024-03-15T10:30:45', expected: '2024-03-15T10:30:45'},
 		];
 
-		it.each(cases)('$name', (c: RoundCase) => {
-			const result = unit['round-down'](tz(c.input), ctx);
-			expect(fmt(result)).toBe(c.expected);
+		it.each(cases)('$name', (tc: RoundCase) => {
+			const result = unit['round-down'](parseUTC(tc.input), ctx);
+			expect(formatForAssertion(result)).toBe(tc.expected);
 		});
 	});
 
@@ -150,9 +147,9 @@ describe('second (s)', () => {
 			{name: 'at boundary', input: '2024-03-15T10:30:45', expected: '2024-03-15T10:30:45.999'},
 		];
 
-		it.each(cases)('$name', (c: RoundCase) => {
-			const result = unit['round-up'](tz(c.input), ctx);
-			expect(fmt(result)).toBe(c.expected);
+		it.each(cases)('$name', (tc: RoundCase) => {
+			const result = unit['round-up'](parseUTC(tc.input), ctx);
+			expect(formatForAssertion(result)).toBe(tc.expected);
 		});
 	});
 });
@@ -168,9 +165,9 @@ describe('minute (m)', () => {
 			{name: 'subtract', input: '2024-03-15T10:30:00', amount: -30, expected: '2024-03-15T10:00:00'},
 		];
 
-		it.each(cases)('$name', (c: AddCase) => {
-			const result = unit.add(tz(c.input), c.amount, ctx);
-			expect(fmt(result)).toBe(c.expected);
+		it.each(cases)('$name', (tc: AddCase) => {
+			const result = unit.add(parseUTC(tc.input), tc.amount, ctx);
+			expect(formatForAssertion(result)).toBe(tc.expected);
 		});
 	});
 
@@ -180,9 +177,9 @@ describe('minute (m)', () => {
 			{name: 'at boundary', input: '2024-03-15T10:30:00', expected: '2024-03-15T10:30:00'},
 		];
 
-		it.each(cases)('$name', (c: RoundCase) => {
-			const result = unit['round-down'](tz(c.input), ctx);
-			expect(fmt(result)).toBe(c.expected);
+		it.each(cases)('$name', (tc: RoundCase) => {
+			const result = unit['round-down'](parseUTC(tc.input), ctx);
+			expect(formatForAssertion(result)).toBe(tc.expected);
 		});
 	});
 
@@ -192,9 +189,9 @@ describe('minute (m)', () => {
 			{name: 'at boundary', input: '2024-03-15T10:30:00', expected: '2024-03-15T10:30:59.999'},
 		];
 
-		it.each(cases)('$name', (c: RoundCase) => {
-			const result = unit['round-up'](tz(c.input), ctx);
-			expect(fmt(result)).toBe(c.expected);
+		it.each(cases)('$name', (tc: RoundCase) => {
+			const result = unit['round-up'](parseUTC(tc.input), ctx);
+			expect(formatForAssertion(result)).toBe(tc.expected);
 		});
 	});
 });
@@ -210,9 +207,9 @@ describe('hour (h)', () => {
 			{name: 'subtract', input: '2024-03-15T10:30:00', amount: -10, expected: '2024-03-15T00:30:00'},
 		];
 
-		it.each(cases)('$name', (c: AddCase) => {
-			const result = unit.add(tz(c.input), c.amount, ctx);
-			expect(fmt(result)).toBe(c.expected);
+		it.each(cases)('$name', (tc: AddCase) => {
+			const result = unit.add(parseUTC(tc.input), tc.amount, ctx);
+			expect(formatForAssertion(result)).toBe(tc.expected);
 		});
 	});
 
@@ -222,9 +219,9 @@ describe('hour (h)', () => {
 			{name: 'at boundary', input: '2024-03-15T10:00:00', expected: '2024-03-15T10:00:00'},
 		];
 
-		it.each(cases)('$name', (c: RoundCase) => {
-			const result = unit['round-down'](tz(c.input), ctx);
-			expect(fmt(result)).toBe(c.expected);
+		it.each(cases)('$name', (tc: RoundCase) => {
+			const result = unit['round-down'](parseUTC(tc.input), ctx);
+			expect(formatForAssertion(result)).toBe(tc.expected);
 		});
 	});
 
@@ -234,9 +231,9 @@ describe('hour (h)', () => {
 			{name: 'at boundary', input: '2024-03-15T10:00:00', expected: '2024-03-15T10:59:59.999'},
 		];
 
-		it.each(cases)('$name', (c: RoundCase) => {
-			const result = unit['round-up'](tz(c.input), ctx);
-			expect(fmt(result)).toBe(c.expected);
+		it.each(cases)('$name', (tc: RoundCase) => {
+			const result = unit['round-up'](parseUTC(tc.input), ctx);
+			expect(formatForAssertion(result)).toBe(tc.expected);
 		});
 	});
 });
@@ -253,9 +250,9 @@ describe('day (d)', () => {
 			{name: 'subtract into non-leap Feb', input: '2023-03-15T10:30:00', amount: -15, expected: '2023-02-28T10:30:00'},
 		];
 
-		it.each(cases)('$name', (c: AddCase) => {
-			const result = unit.add(tz(c.input), c.amount, ctx);
-			expect(fmt(result)).toBe(c.expected);
+		it.each(cases)('$name', (tc: AddCase) => {
+			const result = unit.add(parseUTC(tc.input), tc.amount, ctx);
+			expect(formatForAssertion(result)).toBe(tc.expected);
 		});
 	});
 
@@ -266,9 +263,9 @@ describe('day (d)', () => {
 			{name: 'end of day', input: '2024-03-15T23:59:59.999', expected: '2024-03-15T00:00:00'},
 		];
 
-		it.each(cases)('$name', (c: RoundCase) => {
-			const result = unit['round-down'](tz(c.input), ctx);
-			expect(fmt(result)).toBe(c.expected);
+		it.each(cases)('$name', (tc: RoundCase) => {
+			const result = unit['round-down'](parseUTC(tc.input), ctx);
+			expect(formatForAssertion(result)).toBe(tc.expected);
 		});
 	});
 
@@ -278,9 +275,9 @@ describe('day (d)', () => {
 			{name: 'at midnight', input: '2024-03-15T00:00:00', expected: '2024-03-15T23:59:59.999'},
 		];
 
-		it.each(cases)('$name', (c: RoundCase) => {
-			const result = unit['round-up'](tz(c.input), ctx);
-			expect(fmt(result)).toBe(c.expected);
+		it.each(cases)('$name', (tc: RoundCase) => {
+			const result = unit['round-up'](parseUTC(tc.input), ctx);
+			expect(formatForAssertion(result)).toBe(tc.expected);
 		});
 	});
 });
@@ -296,9 +293,9 @@ describe('week (w)', () => {
 			{name: 'add two weeks', input: '2024-03-15T10:30:00', amount: 2, expected: '2024-03-29T10:30:00'},
 		];
 
-		it.each(cases)('$name', (c: AddCase) => {
-			const result = unit.add(tz(c.input), c.amount, ctx);
-			expect(fmt(result)).toBe(c.expected);
+		it.each(cases)('$name', (tc: AddCase) => {
+			const result = unit.add(parseUTC(tc.input), tc.amount, ctx);
+			expect(formatForAssertion(result)).toBe(tc.expected);
 		});
 	});
 
@@ -311,9 +308,9 @@ describe('week (w)', () => {
 			{name: 'Tuesday to Monday', input: '2024-03-12T12:00:00', expected: '2024-03-11T00:00:00'},
 		];
 
-		it.each(cases)('$name', (c: RoundCase) => {
-			const result = unit['round-down'](tz(c.input), ctx);
-			expect(fmt(result)).toBe(c.expected);
+		it.each(cases)('$name', (tc: RoundCase) => {
+			const result = unit['round-down'](parseUTC(tc.input), ctx);
+			expect(formatForAssertion(result)).toBe(tc.expected);
 		});
 	});
 
@@ -324,9 +321,9 @@ describe('week (w)', () => {
 			{name: 'Sunday stays Sunday', input: '2024-03-17T10:00:00', expected: '2024-03-17T23:59:59.999'},
 		];
 
-		it.each(cases)('$name', (c: RoundCase) => {
-			const result = unit['round-up'](tz(c.input), ctx);
-			expect(fmt(result)).toBe(c.expected);
+		it.each(cases)('$name', (tc: RoundCase) => {
+			const result = unit['round-up'](parseUTC(tc.input), ctx);
+			expect(formatForAssertion(result)).toBe(tc.expected);
 		});
 	});
 });
@@ -345,9 +342,9 @@ describe('month (mo)', () => {
 			{name: 'add full year', input: '2024-03-15T10:30:00', amount: 12, expected: '2025-03-15T10:30:00'},
 		];
 
-		it.each(cases)('$name', (c: AddCase) => {
-			const result = unit.add(tz(c.input), c.amount, ctx);
-			expect(fmt(result)).toBe(c.expected);
+		it.each(cases)('$name', (tc: AddCase) => {
+			const result = unit.add(parseUTC(tc.input), tc.amount, ctx);
+			expect(formatForAssertion(result)).toBe(tc.expected);
 		});
 	});
 
@@ -359,9 +356,9 @@ describe('month (mo)', () => {
 			{name: 'end of year', input: '2024-12-31T23:59:59', expected: '2024-12-01T00:00:00'},
 		];
 
-		it.each(cases)('$name', (c: RoundCase) => {
-			const result = unit['round-down'](tz(c.input), ctx);
-			expect(fmt(result)).toBe(c.expected);
+		it.each(cases)('$name', (tc: RoundCase) => {
+			const result = unit['round-down'](parseUTC(tc.input), ctx);
+			expect(formatForAssertion(result)).toBe(tc.expected);
 		});
 	});
 
@@ -374,9 +371,9 @@ describe('month (mo)', () => {
 			{name: 'first of month', input: '2024-01-01T00:00:00', expected: '2024-01-31T23:59:59.999'},
 		];
 
-		it.each(cases)('$name', (c: RoundCase) => {
-			const result = unit['round-up'](tz(c.input), ctx);
-			expect(fmt(result)).toBe(c.expected);
+		it.each(cases)('$name', (tc: RoundCase) => {
+			const result = unit['round-up'](parseUTC(tc.input), ctx);
+			expect(formatForAssertion(result)).toBe(tc.expected);
 		});
 	});
 });
@@ -399,9 +396,9 @@ describe('year (y)', () => {
 			{name: 'add ten years', input: '2024-03-15T10:30:00', amount: 10, expected: '2034-03-15T10:30:00'},
 		];
 
-		it.each(cases)('$name', (c: AddCase) => {
-			const result = unit.add(tz(c.input), c.amount, ctx);
-			expect(fmt(result)).toBe(c.expected);
+		it.each(cases)('$name', (tc: AddCase) => {
+			const result = unit.add(parseUTC(tc.input), tc.amount, ctx);
+			expect(formatForAssertion(result)).toBe(tc.expected);
 		});
 	});
 
@@ -412,9 +409,9 @@ describe('year (y)', () => {
 			{name: 'end of year', input: '2024-12-31T23:59:59.999', expected: '2024-01-01T00:00:00'},
 		];
 
-		it.each(cases)('$name', (c: RoundCase) => {
-			const result = unit['round-down'](tz(c.input), ctx);
-			expect(fmt(result)).toBe(c.expected);
+		it.each(cases)('$name', (tc: RoundCase) => {
+			const result = unit['round-down'](parseUTC(tc.input), ctx);
+			expect(formatForAssertion(result)).toBe(tc.expected);
 		});
 	});
 
@@ -425,9 +422,9 @@ describe('year (y)', () => {
 			{name: 'mid-year different year', input: '2023-06-15T12:00:00', expected: '2023-12-31T23:59:59.999'},
 		];
 
-		it.each(cases)('$name', (c: RoundCase) => {
-			const result = unit['round-up'](tz(c.input), ctx);
-			expect(fmt(result)).toBe(c.expected);
+		it.each(cases)('$name', (tc: RoundCase) => {
+			const result = unit['round-up'](parseUTC(tc.input), ctx);
+			expect(formatForAssertion(result)).toBe(tc.expected);
 		});
 	});
 });
@@ -444,7 +441,7 @@ describe('now', () => {
 		const result = now({timezone: 'UTC'});
 
 		expect(result.timeZone).toBe('UTC');
-		expect(fmt(result)).toBe('2024-03-15T10:30:00');
+		expect(formatForAssertion(result)).toBe('2024-03-15T10:30:00');
 
 		vi.useRealTimers();
 	});
@@ -457,7 +454,7 @@ describe('now', () => {
 
 		expect(result.timeZone).toBe('Europe/Moscow');
 		// Moscow is UTC+3, so 10:30 UTC = 13:30 Moscow
-		expect(fmt(result)).toBe('2024-03-15T13:30:00');
+		expect(formatForAssertion(result)).toBe('2024-03-15T13:30:00');
 
 		vi.useRealTimers();
 	});
@@ -468,21 +465,18 @@ describe('timezone handling', () => {
 
 	it('day operations respect timezone', () => {
 		const unit = units.get('d')!;
-		// Create midnight on March 15 in New York timezone using static method
-		// TZDate.tz(tz, year, month, date, hours, minutes, seconds)
 		// month is 0-indexed, so March = 2
 		const midnight = TZDate.tz('America/New_York', 2024, 2, 15, 0, 0, 0);
 
 		const startOfDay = unit['round-down'](midnight, ctx);
-		expect(fmt(startOfDay)).toBe('2024-03-15T00:00:00');
+		expect(formatForAssertion(startOfDay)).toBe('2024-03-15T00:00:00');
 
 		const endOfDay = unit['round-up'](midnight, ctx);
-		expect(fmt(endOfDay)).toBe('2024-03-15T23:59:59.999');
+		expect(formatForAssertion(endOfDay)).toBe('2024-03-15T23:59:59.999');
 	});
 
 	it('week operations respect timezone', () => {
 		const unit = units.get('w')!;
-		// Friday noon in New York timezone
 		const friday = TZDate.tz('America/New_York', 2024, 2, 15, 12, 0, 0);
 
 		const startOfWeek = unit['round-down'](friday, ctx);

@@ -46,72 +46,71 @@ export type Unit = UnitDefinition<Time, Timezone>;
  * Creates a context function for date-fns operations.
  * This ensures all date operations respect the timezone.
  */
-function tzContext(ctx: ParseContext<Timezone>) {
+function createDateFnsContext(ctx: ParseContext<Timezone>) {
 	return {
 		in(value: Date | number | string) {
-			// Normalize to timestamp for TZDate constructor
-			const ts = typeof value === 'number' ? value : new Date(value).getTime();
-			return new TZDate(ts, ctx.timezone);
+			const timestamp =
+				typeof value === 'number' ? value : new Date(value).getTime();
+			return new TZDate(timestamp, ctx.timezone);
 		},
 	};
 }
 
 const millisecond: Unit = {
 	name: 'millisecond',
-	add: (time, amount, ctx) => addMilliseconds(time, amount, tzContext(ctx)),
-	// Date has millisecond precision - round-up and round-down return the same value
+	add: (time, amount, ctx) =>
+		addMilliseconds(time, amount, createDateFnsContext(ctx)),
 	'round-up': (time, ctx) => new TZDate(time.getTime(), ctx.timezone),
 	'round-down': (time, ctx) => new TZDate(time.getTime(), ctx.timezone),
 };
 
 const second: Unit = {
 	name: 'second',
-	add: (time, amount, ctx) => addSeconds(time, amount, tzContext(ctx)),
-	'round-up': (time, ctx) => endOfSecond(time, tzContext(ctx)),
-	'round-down': (time, ctx) => startOfSecond(time, tzContext(ctx)),
+	add: (time, amount, ctx) => addSeconds(time, amount, createDateFnsContext(ctx)),
+	'round-up': (time, ctx) => endOfSecond(time, createDateFnsContext(ctx)),
+	'round-down': (time, ctx) => startOfSecond(time, createDateFnsContext(ctx)),
 };
 
 const minute: Unit = {
 	name: 'minute',
-	add: (time, amount, ctx) => addMinutes(time, amount, tzContext(ctx)),
-	'round-up': (time, ctx) => endOfMinute(time, tzContext(ctx)),
-	'round-down': (time, ctx) => startOfMinute(time, tzContext(ctx)),
+	add: (time, amount, ctx) => addMinutes(time, amount, createDateFnsContext(ctx)),
+	'round-up': (time, ctx) => endOfMinute(time, createDateFnsContext(ctx)),
+	'round-down': (time, ctx) => startOfMinute(time, createDateFnsContext(ctx)),
 };
 
 const hour: Unit = {
 	name: 'hour',
-	add: (time, amount, ctx) => addHours(time, amount, tzContext(ctx)),
-	'round-up': (time, ctx) => endOfHour(time, tzContext(ctx)),
-	'round-down': (time, ctx) => startOfHour(time, tzContext(ctx)),
+	add: (time, amount, ctx) => addHours(time, amount, createDateFnsContext(ctx)),
+	'round-up': (time, ctx) => endOfHour(time, createDateFnsContext(ctx)),
+	'round-down': (time, ctx) => startOfHour(time, createDateFnsContext(ctx)),
 };
 
 const day: Unit = {
 	name: 'day',
-	add: (time, amount, ctx) => addDays(time, amount, tzContext(ctx)),
-	'round-up': (time, ctx) => endOfDay(time, tzContext(ctx)),
-	'round-down': (time, ctx) => startOfDay(time, tzContext(ctx)),
+	add: (time, amount, ctx) => addDays(time, amount, createDateFnsContext(ctx)),
+	'round-up': (time, ctx) => endOfDay(time, createDateFnsContext(ctx)),
+	'round-down': (time, ctx) => startOfDay(time, createDateFnsContext(ctx)),
 };
 
 const week: Unit = {
 	name: 'week',
-	add: (time, amount, ctx) => addWeeks(time, amount, tzContext(ctx)),
-	// ISO week: Monday-Sunday
-	'round-up': (time, ctx) => endOfISOWeek(time, tzContext(ctx)),
-	'round-down': (time, ctx) => startOfISOWeek(time, tzContext(ctx)),
+	add: (time, amount, ctx) => addWeeks(time, amount, createDateFnsContext(ctx)),
+	'round-up': (time, ctx) => endOfISOWeek(time, createDateFnsContext(ctx)),
+	'round-down': (time, ctx) => startOfISOWeek(time, createDateFnsContext(ctx)),
 };
 
 const month: Unit = {
 	name: 'month',
-	add: (time, amount, ctx) => addMonths(time, amount, tzContext(ctx)),
-	'round-up': (time, ctx) => endOfMonth(time, tzContext(ctx)),
-	'round-down': (time, ctx) => startOfMonth(time, tzContext(ctx)),
+	add: (time, amount, ctx) => addMonths(time, amount, createDateFnsContext(ctx)),
+	'round-up': (time, ctx) => endOfMonth(time, createDateFnsContext(ctx)),
+	'round-down': (time, ctx) => startOfMonth(time, createDateFnsContext(ctx)),
 };
 
 const year: Unit = {
 	name: 'year',
-	add: (time, amount, ctx) => addYears(time, amount, tzContext(ctx)),
-	'round-up': (time, ctx) => endOfYear(time, tzContext(ctx)),
-	'round-down': (time, ctx) => startOfYear(time, tzContext(ctx)),
+	add: (time, amount, ctx) => addYears(time, amount, createDateFnsContext(ctx)),
+	'round-up': (time, ctx) => endOfYear(time, createDateFnsContext(ctx)),
+	'round-down': (time, ctx) => startOfYear(time, createDateFnsContext(ctx)),
 };
 
 /**
