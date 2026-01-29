@@ -49,8 +49,7 @@ export type Unit = UnitDefinition<Time, Timezone>;
 function createDateFnsContext(ctx: ParseContext<Timezone>) {
 	return {
 		in(value: Date | number | string) {
-			const timestamp =
-				typeof value === 'number' ? value : new Date(value).getTime();
+			const timestamp = typeof value === 'number' ? value : new Date(value).getTime();
 			return new TZDate(timestamp, ctx.timezone);
 		},
 	};
@@ -58,8 +57,7 @@ function createDateFnsContext(ctx: ParseContext<Timezone>) {
 
 const millisecond: Unit = {
 	name: 'millisecond',
-	add: (time, amount, ctx) =>
-		addMilliseconds(time, amount, createDateFnsContext(ctx)),
+	add: (time, amount, ctx) => addMilliseconds(time, amount, createDateFnsContext(ctx)),
 	'round-up': (time, ctx) => new TZDate(time.getTime(), ctx.timezone),
 	'round-down': (time, ctx) => new TZDate(time.getTime(), ctx.timezone),
 };
@@ -133,3 +131,8 @@ export const units: ReadonlyMap<string, Unit> = new Map([
 export function now(ctx: ParseContext<Timezone>): TZDate {
 	return TZDate.tz(ctx.timezone);
 }
+
+/**
+ * Default now aliases.
+ */
+export const nowAliases: readonly string[] = ['now'];
