@@ -5,7 +5,7 @@ import {buildConfig} from '@ver0/eslint-config';
 /** @type {Linter.Config[]} */
 const cfg = [
 	{
-		ignores: ['dist', 'node_modules', '.yarn', 'coverage', 'old-src'],
+		ignores: ['dist', 'node_modules', '.yarn', 'coverage'],
 	},
 	...buildConfig({
 		globals: 'node',

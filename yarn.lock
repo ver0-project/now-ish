@@ -1299,16 +1299,19 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@ver0/now-ish@workspace:packages/now-ish"
   dependencies:
+    "@date-fns/tz": "npm:^1.4.1"
     "@ver0/eslint-config": "npm:^1.3.6"
+    "@ver0/now-ish_date-fns": "workspace:*"
     "@vitest/coverage-v8": "npm:^4.0.18"
+    date-fns: "npm:^4.1.0"
     eslint: "npm:^9.39.2"
-    rimraf: "npm:^6.0.1"
+    rimraf: "npm:^6.1.2"
     typescript: "npm:^5.9.3"
     vitest: "npm:^4.0.18"
   languageName: unknown
   linkType: soft
 
-"@ver0/now-ish_date-fns@workspace:packages/now-ish_date-fns":
+"@ver0/now-ish_date-fns@workspace:*, @ver0/now-ish_date-fns@workspace:packages/now-ish_date-fns":
   version: 0.0.0-use.local
   resolution: "@ver0/now-ish_date-fns@workspace:packages/now-ish_date-fns"
   dependencies:
@@ -5324,7 +5327,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rimraf@npm:^6.0.1, rimraf@npm:^6.1.2":
+"rimraf@npm:^6.1.2":
   version: 6.1.2
   resolution: "rimraf@npm:6.1.2"
   dependencies:
