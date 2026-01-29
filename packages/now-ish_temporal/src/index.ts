@@ -1,6 +1,7 @@
-export type {Timezone, Time, Unit} from './units.js';
+import {createParser} from '@ver0/now-ish';
+import {now, nowAliases, units} from './units.js';
 
-export {units, now} from './units.js';
+export type {Time, Timezone, Unit} from './units.js';
+export {now, nowAliases, units} from './units.js';
 
-// Re-export core types for convenience
-export type {RoundingDirection, ParseContext, UnitDefinition, ParserConfig, Parser, CreateParser} from '@ver0/now-ish';
+export const parse = createParser({now, units, nowAliases, timezone: 'UTC'});

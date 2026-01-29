@@ -109,3 +109,8 @@ export const units: ReadonlyMap<string, Unit> = new Map([
 export function now(ctx: ParseContext<Timezone>): Temporal.ZonedDateTime {
 	return Temporal.Now.zonedDateTimeISO(ctx.timezone);
 }
+
+/**
+ * Default now aliases.
+ */
+export const nowAliases: readonly string[] = ['now'];
