@@ -1,8 +1,32 @@
 {
 	"name": "@ver0/now-ish_date-fns",
 	"version": "0.0.0",
+	"description": "date-fns adapter for @ver0/now-ish",
+	"keywords": [
+		"now",
+		"relative",
+		"time",
+		"parser",
+		"date-fns",
+		"timezone",
+		"adapter"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ver0-project/now-ish"
+	},
+	"bugs": {
+		"url": "https://github.com/ver0-project/now-ish/issues"
+	},
+	"homepage": "https://github.com/ver0-project/now-ish/tree/master/packages/now-ish_date-fns",
+	"sideEffects": false,
 	"publishConfig": {
 		"access": "public"
+	},
+	"license": "MIT",
+	"author": "Anton Zinovyev <xog3@yandex.ru>",
+	"engines": {
+		"node": ">=18"
 	},
 	"type": "module",
 	"main": "./dist/index.js",

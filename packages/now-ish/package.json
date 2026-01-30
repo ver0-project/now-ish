@@ -1,8 +1,32 @@
 {
 	"name": "@ver0/now-ish",
 	"version": "0.0.0",
+	"description": "Parse relative time expressions like now-7d or now/w",
+	"keywords": [
+		"now",
+		"relative",
+		"time",
+		"parser",
+		"grafana",
+		"date",
+		"expression"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ver0-project/now-ish"
+	},
+	"bugs": {
+		"url": "https://github.com/ver0-project/now-ish/issues"
+	},
+	"homepage": "https://github.com/ver0-project/now-ish",
+	"sideEffects": false,
 	"publishConfig": {
 		"access": "public"
+	},
+	"license": "MIT",
+	"author": "Anton Zinovyev <xog3@yandex.ru>",
+	"engines": {
+		"node": ">=18"
 	},
 	"type": "module",
 	"main": "./dist/index.js",
