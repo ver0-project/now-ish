@@ -22,7 +22,7 @@ jobs:
       packages: ${{ steps.affected.outputs.packages }}
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: "Detect changed paths"
         uses: dorny/paths-filter@v3
         id: filter
@@ -66,7 +66,7 @@ jobs:
         package: ${{ fromJson(needs.changes.outputs.packages) }}
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: "Enable corepack"
@@ -92,7 +92,7 @@ jobs:
         package: ${{ fromJson(needs.changes.outputs.packages) }}
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: "Enable corepack"
@@ -118,7 +118,7 @@ jobs:
         package: ${{ fromJson(needs.changes.outputs.packages) }}
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: "Enable corepack"
