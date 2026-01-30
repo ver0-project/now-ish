@@ -1,0 +1,139 @@
+name: "CI"
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  changes:
+    name: "Detect changes"
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      packages: ${{ steps.affected.outputs.packages }}
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v5
+      - name: "Detect changed paths"
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            root:
+              - 'yarn.lock'
+              - 'package.json'
+              - 'tsconfig.json'
+              - '.yarnrc.yml'
+              - '.github/**'
+            core:
+              - 'packages/now-ish/**'
+            date-fns:
+              - 'packages/now-ish_date-fns/**'
+            temporal:
+              - 'packages/now-ish_temporal/**'
+      - name: "Build affected packages list"
+        id: affected
+        env:
+          ROOT: ${{ steps.filter.outputs.root }}
+          CORE: ${{ steps.filter.outputs.core }}
+          DATE_FNS: ${{ steps.filter.outputs.date-fns }}
+          TEMPORAL: ${{ steps.filter.outputs.temporal }}
+        run: |
+          pkgs=()
+          all=$([[ "$ROOT" == "true" || "$CORE" == "true" ]] && echo true)
+          [[ "$all" ]] && pkgs+=('"@ver0/now-ish"')
+          [[ "$all" || "$DATE_FNS" == "true" ]] && pkgs+=('"@ver0/now-ish_date-fns"')
+          [[ "$all" || "$TEMPORAL" == "true" ]] && pkgs+=('"@ver0/now-ish_temporal"')
+          echo "packages=[$(IFS=,; echo "${pkgs[*]}")]" >> "$GITHUB_OUTPUT"
+
+  lint:
+    name: "Lint"
+    needs: changes
+    if: needs.changes.outputs.packages != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJson(needs.changes.outputs.packages) }}
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: "Enable corepack"
+        run: corepack enable
+      - name: "Setup Node.js"
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: yarn
+      - name: "Install dependencies"
+        run: yarn install --immutable
+      - name: "Lint ${{ matrix.package }}"
+        run: yarn workspace ${{ matrix.package }} lint -f @ver0/gha
+
+  build:
+    name: "Build"
+    needs: changes
+    if: needs.changes.outputs.packages != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJson(needs.changes.outputs.packages) }}
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: "Enable corepack"
+        run: corepack enable
+      - name: "Setup Node.js"
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: yarn
+      - name: "Install dependencies"
+        run: yarn install --immutable
+      - name: "Build ${{ matrix.package }}"
+        run: yarn workspace ${{ matrix.package }} build
+
+  test:
+    name: "Test"
+    needs: changes
+    if: needs.changes.outputs.packages != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJson(needs.changes.outputs.packages) }}
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: "Enable corepack"
+        run: corepack enable
+      - name: "Setup Node.js"
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: yarn
+      - name: "Install dependencies"
+        run: yarn install --immutable
+      - name: "Test ${{ matrix.package }}"
+        run: >-
+          yarn workspace ${{ matrix.package }} test:coverage
+          --reporter='github-actions'
+          --reporter='junit'
+          --outputFile='./coverage/test-report.junit.xml'
+          --reporter=default
