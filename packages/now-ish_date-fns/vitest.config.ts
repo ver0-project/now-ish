@@ -11,7 +11,7 @@ export default defineConfig({
 		passWithNoTests: true,
 		coverage: {
 			include: ['src/**/*.ts'],
-			exclude: ['src/**/*.test.ts'],
+			exclude: ['src/**/*.test.ts', '**/now-ish/**', '**/now-ish_temporal/**'],
 		},
 	},
 });

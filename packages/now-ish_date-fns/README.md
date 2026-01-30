@@ -60,10 +60,10 @@ import {createParser} from '@ver0/now-ish';
 import {now, units} from '@ver0/now-ish_date-fns';
 
 const parse = createParser({
-  now,
-  units,
-  nowAliases: ['now', 'jetzt', 'сейчас'],
-  timezone: 'Europe/Berlin',
+	now,
+	units,
+	nowAliases: ['now', 'jetzt', 'сейчас'],
+	timezone: 'Europe/Berlin',
 });
 
 parse('jetzt-7d'); // works
@@ -77,14 +77,14 @@ import {now, units} from '@ver0/now-ish_date-fns';
 
 // Add aliases for existing units
 const extendedUnits = new Map(units);
-extendedUnits.set('t', units.get('d')!);    // German: Tag = day
-extendedUnits.set('wo', units.get('w')!);   // German: Woche = week
+extendedUnits.set('t', units.get('d')!); // German: Tag = day
+extendedUnits.set('wo', units.get('w')!); // German: Woche = week
 
 const parse = createParser({
-  now,
-  units: extendedUnits,
-  nowAliases: ['now', 'jetzt'],
-  timezone: 'UTC',
+	now,
+	units: extendedUnits,
+	nowAliases: ['now', 'jetzt'],
+	timezone: 'UTC',
 });
 
 parse('jetzt-7t'); // 7 days ago
@@ -93,4 +93,5 @@ parse('jetzt-7t'); // 7 days ago
 ### Related
 
 - [@ver0/now-ish](https://github.com/ver0-project/now-ish) — Core parser, expression syntax, extensibility
-- [@ver0/now-ish_temporal](https://github.com/ver0-project/now-ish/tree/master/packages/now-ish_temporal) — Temporal API adapter
+- [@ver0/now-ish_temporal](https://github.com/ver0-project/now-ish/tree/master/packages/now-ish_temporal) — Temporal API
+  adapter

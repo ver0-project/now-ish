@@ -25,14 +25,14 @@ The expression syntax is simple enough that you can expose it directly to your u
 or dropdowns with predefined ranges, let users type `now-7d` for "last 7 days" or `now/mo` for "since start of month".
 It's readable, compact, and powerful enough for complex ranges like "start of next month" (`now/mo+1mo/mo`).
 
-The syntax is compatible
-with [Grafana's relative time expressions](https://grafana.com/docs/grafana/latest/dashboards/use-dashboards/#time-units-and-relative-ranges),
+The syntax is compatible with
+[Grafana's relative time expressions](https://grafana.com/docs/grafana/latest/dashboards/use-dashboards/#time-units-and-relative-ranges),
 so if you're building dashboards or analytics tools, your users may already be familiar with it.
 
 The parser is fully extensible. You can define custom units like fiscal quarters (`fq`) or business days (`bd`) —
 whatever makes sense for your domain. You can also localize both the `now` keyword and unit names, enabling fully
-localized expressions: `jetzt-7t` in German, `сейчас-7д` in Russian. The grammar stays the same, but the vocabulary
-can be adapted to your audience.
+localized expressions: `jetzt-7t` in German, `сейчас-7д` in Russian. The grammar stays the same, but the vocabulary can
+be adapted to your audience.
 
 ### How expressions work
 
@@ -58,8 +58,8 @@ You can combine them. The expression is evaluated left to right:
 
 When rounding, you choose the direction:
 
-- **round-down** (default) → snaps to the *start* of the period
-- **round-up** → snaps to the *end* of the period (last nanosecond/millisecond)
+- **round-down** (default) → snaps to the _start_ of the period
+- **round-up** → snaps to the _end_ of the period (last nanosecond/millisecond)
 
 This makes it easy to build time ranges: round-down gives you the "from" boundary, round-up gives you the "to" boundary.
 
@@ -69,7 +69,7 @@ This is the **core package** — it parses expressions but doesn't know how to d
 adapter that works with your preferred date library:
 
 | Adapter                                                                                                 | Returns         | Install                                            |
-|---------------------------------------------------------------------------------------------------------|-----------------|----------------------------------------------------|
+| ------------------------------------------------------------------------------------------------------- | --------------- | -------------------------------------------------- |
 | [@ver0/now-ish_date-fns](https://github.com/ver0-project/now-ish/tree/master/packages/now-ish_date-fns) | `TZDate`        | `npm install @ver0/now-ish_date-fns @ver0/now-ish` |
 | [@ver0/now-ish_temporal](https://github.com/ver0-project/now-ish/tree/master/packages/now-ish_temporal) | `ZonedDateTime` | `npm install @ver0/now-ish_temporal @ver0/now-ish` |
 
@@ -92,8 +92,7 @@ a complete example.
 import {createParser} from '@ver0/now-ish';
 
 const parse = createParser({
-	now: (ctx) => {
-	},
+	now: (ctx) => {},
 	units: new Map(),
 	timezone: 'UTC',
 	nowAliases: ['now'],
