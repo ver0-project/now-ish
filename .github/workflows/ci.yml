@@ -137,3 +137,32 @@ jobs:
           --reporter='junit'
           --outputFile='./coverage/test-report.junit.xml'
           --reporter=default
+      - name: "Upload coverage to Codecov"
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/test-report.junit.xml
+          flags: ${{ matrix.package }}
+          fail_ci_if_error: false
+      - name: "Upload test results to Codecov"
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/test-report.junit.xml
+          flags: ${{ matrix.package }}
+          fail_ci_if_error: false
+
+  dependabot-merge:
+    name: "Dependabot automerge"
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
+    needs: [lint, build, test]
+    if: github.actor == 'dependabot[bot]' && github.event_name == 'pull_request'
+    steps:
+      - name: "Automerge Dependabot PR"
+        uses: fastify/github-action-merge-dependabot@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
