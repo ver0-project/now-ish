@@ -10,5 +10,9 @@ export default defineConfig({
 	test: {
 		include: ['src/**/*.test.ts'],
 		passWithNoTests: true,
+		coverage: {
+			include: ['src/**/*.ts'],
+			exclude: ['src/**/*.test.ts', '**/now-ish_date-fns/**', '**/now-ish_temporal/**'],
+		},
 	},
 });
