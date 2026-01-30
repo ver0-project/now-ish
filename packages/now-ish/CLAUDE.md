@@ -17,7 +17,7 @@ Core parser for Grafana-style relative time expressions. Adapter-agnostic.
 
 ## Expression Grammar
 
-```
+```text
 now[/round][±Nunit[/round]]
 ```
 
