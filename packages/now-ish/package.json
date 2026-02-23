@@ -1,6 +1,6 @@
 {
 	"name": "@ver0/now-ish",
-	"version": "0.0.0",
+	"version": "1.0.0",
 	"description": "Parse relative time expressions like now-7d or now/w",
 	"keywords": [
 		"now",

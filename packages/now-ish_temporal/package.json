@@ -1,6 +1,6 @@
 {
 	"name": "@ver0/now-ish_temporal",
-	"version": "0.0.0",
+	"version": "1.0.0",
 	"description": "Temporal API adapter for @ver0/now-ish",
 	"keywords": [
 		"now",
