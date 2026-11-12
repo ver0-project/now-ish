@@ -55,6 +55,18 @@ function createDateFnsContext(ctx: ParseContext<Timezone>) {
 	};
 }
 
+// constraint: a TZDate resolves a wall-clock time that a clock change repeats to its first pass
+function preferInputOffset(time: Time, rounded: Time, ctx: ParseContext<Timezone>): Time {
+	const inputOffset = new TZDate(time.getTime(), ctx.timezone).getTimezoneOffset();
+	const shiftMinutes = inputOffset - rounded.getTimezoneOffset();
+	if (shiftMinutes === 0) {
+		return rounded;
+	}
+
+	const sameWallClock = new TZDate(rounded.getTime() + shiftMinutes * 60_000, ctx.timezone);
+	return sameWallClock.getTimezoneOffset() === inputOffset ? sameWallClock : rounded;
+}
+
 const millisecond: Unit = {
 	name: 'millisecond',
 	add: (time, amount, ctx) => addMilliseconds(time, amount, createDateFnsContext(ctx)),
@@ -65,22 +77,22 @@ const millisecond: Unit = {
 const second: Unit = {
 	name: 'second',
 	add: (time, amount, ctx) => addSeconds(time, amount, createDateFnsContext(ctx)),
-	'round-up': (time, ctx) => endOfSecond(time, createDateFnsContext(ctx)),
-	'round-down': (time, ctx) => startOfSecond(time, createDateFnsContext(ctx)),
+	'round-up': (time, ctx) => preferInputOffset(time, endOfSecond(time, createDateFnsContext(ctx)), ctx),
+	'round-down': (time, ctx) => preferInputOffset(time, startOfSecond(time, createDateFnsContext(ctx)), ctx),
 };
 
 const minute: Unit = {
 	name: 'minute',
 	add: (time, amount, ctx) => addMinutes(time, amount, createDateFnsContext(ctx)),
-	'round-up': (time, ctx) => endOfMinute(time, createDateFnsContext(ctx)),
-	'round-down': (time, ctx) => startOfMinute(time, createDateFnsContext(ctx)),
+	'round-up': (time, ctx) => preferInputOffset(time, endOfMinute(time, createDateFnsContext(ctx)), ctx),
+	'round-down': (time, ctx) => preferInputOffset(time, startOfMinute(time, createDateFnsContext(ctx)), ctx),
 };
 
 const hour: Unit = {
 	name: 'hour',
 	add: (time, amount, ctx) => addHours(time, amount, createDateFnsContext(ctx)),
-	'round-up': (time, ctx) => endOfHour(time, createDateFnsContext(ctx)),
-	'round-down': (time, ctx) => startOfHour(time, createDateFnsContext(ctx)),
+	'round-up': (time, ctx) => preferInputOffset(time, endOfHour(time, createDateFnsContext(ctx)), ctx),
+	'round-down': (time, ctx) => preferInputOffset(time, startOfHour(time, createDateFnsContext(ctx)), ctx),
 };
 
 const day: Unit = {

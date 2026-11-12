@@ -18,6 +18,9 @@ date-fns adapter for `@ver0/now-ish`. Returns TZDate.
 - Uses `TZDate` from `@date-fns/tz` for timezone-aware operations
 - Week starts Monday (ISO 8601)
 - All rounding operations use date-fns functions with timezone context
+- Second, minute, and hour rounding keeps the UTC offset of the input in the context timezone when the rounded
+  wall-clock time exists at that offset — the result stays in the same pass of an hour that a clock change repeats. Day
+  and larger units do not: a day starts at the first pass of midnight
 
 ## Core Files
 
