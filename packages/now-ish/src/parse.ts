@@ -41,7 +41,8 @@ export type Parser<T, TZ> = (input: string, direction?: RoundingDirection, optio
 
 /**
  * 'invalid-structure': expression doesn't match grammar.
- * 'invalid-value': structure valid but contains unknown unit or alias.
+ * 'invalid-value': structure valid but contains unknown unit or alias,
+ * or an offset amount that is not a safe integer.
  */
 export type ParseErrorKind = 'invalid-structure' | 'invalid-value';
 
@@ -84,8 +85,9 @@ type ParsedExpression = {
 const STRUCTURE_RX = /^([\p{L}\p{M}]+)(?:\/([\p{L}\p{M}]+))?(?:([+-])(\d+)([\p{L}\p{M}]+)(?:\/([\p{L}\p{M}]+))?)?$/u;
 
 /**
- * Extract tokens from expression. Validates grammar, not values.
+ * Extract tokens from expression. Validates grammar and the offset amount, not names.
  * @throws ParseError('invalid-structure') if pattern doesn't match
+ * @throws ParseError('invalid-value') if the offset amount is not a safe integer
  */
 export function parseStructure(input: string): ParsedExpression {
 	const match = STRUCTURE_RX.exec(input);
@@ -93,7 +95,12 @@ export function parseStructure(input: string): ParsedExpression {
 		throw new ParseError('invalid-structure', input);
 	}
 
-	let amount = Number(match[4] ?? '0');
+	const digits = match[4] ?? '0';
+	let amount = Number(digits);
+	if (!Number.isSafeInteger(amount)) {
+		throw new ParseError('invalid-value', digits, 'offset');
+	}
+
 	if (match[3] === '-' && !Number.isNaN(amount) && amount !== 0) {
 		amount *= -1;
 	}
