@@ -13,157 +13,156 @@ permissions:
   contents: read
 
 jobs:
-  changes:
-    name: "Detect changes"
+  # Each run checks every package. The packages depend on each other through peerDependencies, which
+  # `yarn workspaces list --since --recursive` does not follow, so a list of changed packages would leave out the
+  # dependents of a changed package.
+  packages:
+    name: "List packages"
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: read
     outputs:
-      packages: ${{ steps.affected.outputs.packages }}
+      packages: ${{ steps.list.outputs.packages }}
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v6
-      - name: "Detect changed paths"
-        uses: dorny/paths-filter@v3
-        id: filter
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          filters: |
-            root:
-              - 'yarn.lock'
-              - 'package.json'
-              - 'tsconfig.json'
-              - '.yarnrc.yml'
-              - '.github/**'
-            core:
-              - 'packages/now-ish/**'
-            date-fns:
-              - 'packages/now-ish_date-fns/**'
-            temporal:
-              - 'packages/now-ish_temporal/**'
-      - name: "Build affected packages list"
-        id: affected
-        env:
-          ROOT: ${{ steps.filter.outputs.root }}
-          CORE: ${{ steps.filter.outputs.core }}
-          DATE_FNS: ${{ steps.filter.outputs.date-fns }}
-          TEMPORAL: ${{ steps.filter.outputs.temporal }}
+          persist-credentials: false
+      - name: "Enable corepack"
+        run: corepack enable
+      - name: "List workspace packages"
+        id: list
         run: |
-          pkgs=()
-          all=""
-          [[ "$ROOT" == "true" || "$CORE" == "true" ]] && all=true
-          [[ "$all" ]] && pkgs+=('"@ver0/now-ish"')
-          [[ "$all" || "$DATE_FNS" == "true" ]] && pkgs+=('"@ver0/now-ish_date-fns"')
-          [[ "$all" || "$TEMPORAL" == "true" ]] && pkgs+=('"@ver0/now-ish_temporal"')
-          echo "packages=[$(IFS=,; echo "${pkgs[*]}")]" >> "$GITHUB_OUTPUT"
+          packages=$(yarn workspaces list --json | jq --slurp --compact-output 'map(select(.location != "."))')
+          echo "$packages"
+          echo "packages=$packages" >> "$GITHUB_OUTPUT"
 
   lint:
-    name: "Lint"
-    needs: changes
-    if: needs.changes.outputs.packages != '[]'
+    name: "Lint (${{ matrix.package.name }})"
+    needs: packages
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        package: ${{ fromJson(needs.changes.outputs.packages) }}
+        package: ${{ fromJson(needs.packages.outputs.packages) }}
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 0
+          persist-credentials: false
       - name: "Enable corepack"
         run: corepack enable
       - name: "Setup Node.js"
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
           cache: yarn
       - name: "Install dependencies"
         run: yarn install --immutable
-      - name: "Lint ${{ matrix.package }}"
-        run: yarn workspace ${{ matrix.package }} lint -f @ver0/gha
+      - name: "Lint"
+        env:
+          PACKAGE: ${{ matrix.package.name }}
+        run: yarn workspace "$PACKAGE" lint -f @ver0/gha
 
   build:
-    name: "Build"
-    needs: changes
-    if: needs.changes.outputs.packages != '[]'
+    name: "Build (${{ matrix.package.name }})"
+    needs: packages
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        package: ${{ fromJson(needs.changes.outputs.packages) }}
+        package: ${{ fromJson(needs.packages.outputs.packages) }}
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 0
+          persist-credentials: false
       - name: "Enable corepack"
         run: corepack enable
       - name: "Setup Node.js"
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
           cache: yarn
       - name: "Install dependencies"
         run: yarn install --immutable
-      - name: "Build ${{ matrix.package }}"
-        run: yarn workspace ${{ matrix.package }} build
+      - name: "Build"
+        env:
+          PACKAGE: ${{ matrix.package.name }}
+        run: yarn workspace "$PACKAGE" build
 
   test:
-    name: "Test"
-    needs: changes
-    if: needs.changes.outputs.packages != '[]'
+    name: "Test (${{ matrix.package.name }})"
+    needs: packages
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        package: ${{ fromJson(needs.changes.outputs.packages) }}
+        package: ${{ fromJson(needs.packages.outputs.packages) }}
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 0
+          persist-credentials: false
       - name: "Enable corepack"
         run: corepack enable
       - name: "Setup Node.js"
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
           cache: yarn
       - name: "Install dependencies"
         run: yarn install --immutable
-      - name: "Test ${{ matrix.package }}"
+      - name: "Test"
+        env:
+          PACKAGE: ${{ matrix.package.name }}
         run: >-
-          yarn workspace ${{ matrix.package }} test:coverage
+          yarn workspace "$PACKAGE" test:coverage
           --reporter='github-actions'
           --reporter='junit'
           --outputFile='./coverage/test-report.junit.xml'
           --reporter=default
       - name: "Upload coverage to Codecov"
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage/test-report.junit.xml
-          flags: ${{ matrix.package }}
+          directory: ${{ matrix.package.location }}/coverage
+          flags: ${{ matrix.package.name }}
           fail_ci_if_error: false
       - name: "Upload test results to Codecov"
         if: ${{ !cancelled() }}
-        uses: codecov/test-results-action@v1
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage/test-report.junit.xml
-          flags: ${{ matrix.package }}
+          report_type: test_results
+          files: ${{ matrix.package.location }}/coverage/test-report.junit.xml
+          flags: ${{ matrix.package.name }}
           fail_ci_if_error: false
 
+  # The protect-master ruleset requires the status check of this job and of no other, so the ruleset does not list the
+  # per-package jobs. The job passes only when each job it needs passed.
+  ci-ok:
+    name: "ci-ok"
+    if: always()
+    needs: [packages, lint, build, test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Check that each job passed"
+        env:
+          RESULTS: ${{ toJSON(needs.*.result) }}
+        run: |
+          echo "$RESULTS"
+          jq --exit-status 'all(. == "success")' <<< "$RESULTS"
+
+  # The merge waits for ci-ok: the ruleset rejects a merge while the required status check is pending.
   dependabot-merge:
     name: "Dependabot automerge"
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
       contents: write
-    needs: [lint, build, test]
+    needs: [ci-ok]
     if: github.actor == 'dependabot[bot]' && github.event_name == 'pull_request'
     steps:
       - name: "Automerge Dependabot PR"
-        uses: fastify/github-action-merge-dependabot@v3
+        uses: fastify/github-action-merge-dependabot@73ec4cbb5e56df5591eae286972d5b2201ffe90f # v3.15.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
