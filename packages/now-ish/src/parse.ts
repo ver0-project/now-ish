@@ -73,10 +73,10 @@ export class ParseError extends Error {
 
 // Raw tokens extracted from expression string.
 type ParsedExpression = {
-	now: string;
-	nowRounding?: string | undefined;
-	offset?: {amount: number; unit: string} | undefined;
-	finalRounding?: string | undefined;
+	readonly now: string;
+	readonly nowRounding?: string | undefined;
+	readonly offset?: {readonly amount: number; readonly unit: string} | undefined;
+	readonly finalRounding?: string | undefined;
 };
 
 // Structure: now[/round][±Nunit[/round]]
@@ -101,7 +101,7 @@ export function parseStructure(input: string): ParsedExpression {
 	return {
 		now: match[1]!, // bang justified: regex guarantees match
 		nowRounding: match[2],
-		offset: match[4] ? {amount, unit: match[5]!} : undefined,
+		offset: match[4] === undefined ? undefined : {amount, unit: match[5]!},
 		finalRounding: match[6],
 	};
 }
@@ -121,7 +121,7 @@ function resolveExpression<T, TZ>(expr: ParsedExpression, config: ParserConfig<T
 
 	const result: ResolvedExpression<T, TZ> = {};
 
-	if (expr.nowRounding) {
+	if (expr.nowRounding !== undefined) {
 		result.nowRounding = config.units.get(expr.nowRounding);
 		if (!result.nowRounding) {
 			throw new ParseError('invalid-value', expr.nowRounding, 'now-rounding');
@@ -136,7 +136,7 @@ function resolveExpression<T, TZ>(expr: ParsedExpression, config: ParserConfig<T
 
 		result.offset = {amount: expr.offset.amount, unit: offsetUnit};
 
-		if (expr.finalRounding) {
+		if (expr.finalRounding !== undefined) {
 			result.finalRounding = config.units.get(expr.finalRounding);
 			if (!result.finalRounding) {
 				throw new ParseError('invalid-value', expr.finalRounding, 'final-rounding');
