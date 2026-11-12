@@ -18,16 +18,16 @@ function fmt(value: Temporal.ZonedDateTime): string {
 }
 
 type AddCase = {
-	name: string;
-	input: string;
-	amount: number;
-	expected: string;
+	readonly name: string;
+	readonly input: string;
+	readonly amount: number;
+	readonly expected: string;
 };
 
 type RoundCase = {
-	name: string;
-	input: string;
-	expected: string;
+	readonly name: string;
+	readonly input: string;
+	readonly expected: string;
 };
 
 describe('units', () => {
