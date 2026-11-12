@@ -25,11 +25,11 @@ const endOfMonth = parse('now/mo', 'round-up');
 
 ## Packages
 
-| Package | Description |
-|---------|-------------|
-| [@ver0/now-ish](./packages/now-ish) | Core parser — expression syntax, extensibility, types |
-| [@ver0/now-ish_date-fns](./packages/now-ish_date-fns) | date-fns adapter — returns `TZDate` |
-| [@ver0/now-ish_temporal](./packages/now-ish_temporal) | Temporal API adapter — returns `ZonedDateTime` |
+| Package                                               | Description                                           |
+| ----------------------------------------------------- | ----------------------------------------------------- |
+| [@ver0/now-ish](./packages/now-ish)                   | Core parser — expression syntax, extensibility, types |
+| [@ver0/now-ish_date-fns](./packages/now-ish_date-fns) | date-fns adapter — returns `TZDate`                   |
+| [@ver0/now-ish_temporal](./packages/now-ish_temporal) | Temporal API adapter — returns `ZonedDateTime`        |
 
 ## Expression Syntax
 

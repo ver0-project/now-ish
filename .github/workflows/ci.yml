@@ -1,4 +1,4 @@
-name: "CI"
+name: 'CI'
 
 on:
   push:
@@ -22,18 +22,18 @@ jobs:
   # `yarn workspaces list --since --recursive` does not follow, so a list of changed packages would leave out the
   # dependents of a changed package.
   packages:
-    name: "List packages"
+    name: 'List packages'
     runs-on: ubuntu-latest
     outputs:
       packages: ${{ steps.list.outputs.packages }}
     steps:
-      - name: "Checkout"
+      - name: 'Checkout'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: "Enable corepack"
+      - name: 'Enable corepack'
         run: corepack enable
-      - name: "List workspace packages"
+      - name: 'List workspace packages'
         id: list
         run: |
           packages=$(yarn workspaces list --json | jq --slurp --compact-output 'map(select(.location != "."))')
@@ -41,7 +41,7 @@ jobs:
           echo "packages=$packages" >> "$GITHUB_OUTPUT"
 
   lint:
-    name: "Lint (${{ matrix.package.name }})"
+    name: 'Lint (${{ matrix.package.name }})'
     needs: packages
     runs-on: ubuntu-latest
     strategy:
@@ -49,26 +49,26 @@ jobs:
       matrix:
         package: ${{ fromJson(needs.packages.outputs.packages) }}
     steps:
-      - name: "Checkout"
+      - name: 'Checkout'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: "Enable corepack"
+      - name: 'Enable corepack'
         run: corepack enable
-      - name: "Setup Node.js"
+      - name: 'Setup Node.js'
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
           cache: yarn
-      - name: "Install dependencies"
+      - name: 'Install dependencies'
         run: yarn install --immutable
-      - name: "Lint"
+      - name: 'Lint'
         env:
           PACKAGE: ${{ matrix.package.name }}
         run: yarn workspace "$PACKAGE" lint -f @ver0/gha
 
   build:
-    name: "Build (${{ matrix.package.name }})"
+    name: 'Build (${{ matrix.package.name }})'
     needs: packages
     runs-on: ubuntu-latest
     strategy:
@@ -76,26 +76,26 @@ jobs:
       matrix:
         package: ${{ fromJson(needs.packages.outputs.packages) }}
     steps:
-      - name: "Checkout"
+      - name: 'Checkout'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: "Enable corepack"
+      - name: 'Enable corepack'
         run: corepack enable
-      - name: "Setup Node.js"
+      - name: 'Setup Node.js'
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
           cache: yarn
-      - name: "Install dependencies"
+      - name: 'Install dependencies'
         run: yarn install --immutable
-      - name: "Build"
+      - name: 'Build'
         env:
           PACKAGE: ${{ matrix.package.name }}
         run: yarn workspace "$PACKAGE" build
 
   test:
-    name: "Test (${{ matrix.package.name }})"
+    name: 'Test (${{ matrix.package.name }})'
     needs: packages
     runs-on: ubuntu-latest
     strategy:
@@ -103,20 +103,20 @@ jobs:
       matrix:
         package: ${{ fromJson(needs.packages.outputs.packages) }}
     steps:
-      - name: "Checkout"
+      - name: 'Checkout'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: "Enable corepack"
+      - name: 'Enable corepack'
         run: corepack enable
-      - name: "Setup Node.js"
+      - name: 'Setup Node.js'
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
           cache: yarn
-      - name: "Install dependencies"
+      - name: 'Install dependencies'
         run: yarn install --immutable
-      - name: "Test"
+      - name: 'Test'
         env:
           PACKAGE: ${{ matrix.package.name }}
         run: >-
@@ -125,14 +125,14 @@ jobs:
           --reporter='junit'
           --outputFile='./coverage/test-report.junit.xml'
           --reporter=default
-      - name: "Upload coverage to Codecov"
+      - name: 'Upload coverage to Codecov'
         uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           directory: ${{ matrix.package.location }}/coverage
           flags: ${{ matrix.package.name }}
           fail_ci_if_error: false
-      - name: "Upload test results to Codecov"
+      - name: 'Upload test results to Codecov'
         if: ${{ !cancelled() }}
         uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         with:
@@ -145,12 +145,12 @@ jobs:
   # The protect-master ruleset requires the status check of this job and of no other, so the ruleset does not list the
   # per-package jobs. The job passes only when each job it needs passed.
   ci-ok:
-    name: "ci-ok"
+    name: 'ci-ok'
     if: always()
     needs: [packages, lint, build, test]
     runs-on: ubuntu-latest
     steps:
-      - name: "Check that each job passed"
+      - name: 'Check that each job passed'
         env:
           RESULTS: ${{ toJSON(needs.*.result) }}
         run: |
@@ -159,7 +159,7 @@ jobs:
 
   # The merge waits for ci-ok: the ruleset rejects a merge while the required status check is pending.
   dependabot-merge:
-    name: "Dependabot automerge"
+    name: 'Dependabot automerge'
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
@@ -167,7 +167,7 @@ jobs:
     needs: [ci-ok]
     if: github.actor == 'dependabot[bot]' && github.event_name == 'pull_request'
     steps:
-      - name: "Automerge Dependabot PR"
+      - name: 'Automerge Dependabot PR'
         uses: fastify/github-action-merge-dependabot@73ec4cbb5e56df5591eae286972d5b2201ffe90f # v3.15.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
