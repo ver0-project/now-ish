@@ -65,7 +65,7 @@ jobs:
       - name: 'Lint'
         env:
           PACKAGE: ${{ matrix.package.name }}
-        run: yarn workspace "$PACKAGE" lint -f @ver0/gha
+        run: yarn workspace "$PACKAGE" lint --format github
 
   build:
     name: 'Build (${{ matrix.package.name }})'
