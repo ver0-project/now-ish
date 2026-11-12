@@ -24,10 +24,13 @@ Examples: `now`, `now-1d`, `now/w`, `now-7d/d`, `now/mo+1mo/mo`
 
 ## Commands
 
+The root `package.json` defines only the Changesets scripts. Run package scripts through workspaces:
+
 ```bash
-yarn test           # run all tests
-yarn build          # build all packages
-yarn lint           # lint all packages
+yarn workspaces foreach -A run test       # run all tests
+yarn workspaces foreach -A run build      # build all packages
+yarn workspaces foreach -A run lint       # lint all packages
+yarn workspace <package-name> <script>    # run one package's script
 ```
 
 ## Versioning
