@@ -93,7 +93,7 @@ export function parseStructure(input: string): ParsedExpression {
 		throw new ParseError('invalid-structure', input);
 	}
 
-	let amount = Number.parseInt(match[4] ?? '0', 10);
+	let amount = Number(match[4] ?? '0');
 	if (match[3] === '-' && !Number.isNaN(amount) && amount !== 0) {
 		amount *= -1;
 	}

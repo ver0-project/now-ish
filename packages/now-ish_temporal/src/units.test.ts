@@ -13,8 +13,8 @@ function zdt(iso: string): Temporal.ZonedDateTime {
  * Helper to format ZonedDateTime for assertions.
  * Returns ISO string without timezone offset.
  */
-function fmt(zdt: Temporal.ZonedDateTime): string {
-	return zdt.toPlainDateTime().toString();
+function fmt(value: Temporal.ZonedDateTime): string {
+	return value.toPlainDateTime().toString();
 }
 
 type AddCase = {
