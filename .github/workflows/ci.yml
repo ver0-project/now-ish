@@ -81,6 +81,11 @@ jobs:
         env:
           PACKAGE: ${{ matrix.package.name }}
         run: yarn workspace "$PACKAGE" lint --format github
+      - name: 'Typecheck'
+        if: ${{ !cancelled() }}
+        env:
+          PACKAGE: ${{ matrix.package.name }}
+        run: yarn workspace "$PACKAGE" typecheck
 
   build:
     name: 'Build (${{ matrix.package.name }})'
