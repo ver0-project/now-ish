@@ -17,4 +17,11 @@ export default defineConfig({
 	lint: {
 		extends: [javascript, typescript, node, vitest],
 	},
+	pack: {
+		entry: 'src/index.ts',
+		fixedExtension: false,
+		dts: {generator: 'oxc'},
+		publint: true,
+		attw: {profile: 'esm-only'},
+	},
 });

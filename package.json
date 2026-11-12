@@ -11,9 +11,11 @@
 		"release": "changeset publish"
 	},
 	"devDependencies": {
+		"@arethetypeswrong/core": "^0.18.5",
 		"@changesets/cli": "^2.29.8",
 		"@ver0/oxlint-config": "^2.0.4",
 		"@vitest/coverage-v8": "^5.1.0",
+		"publint": "^0.3.25",
 		"vite-plus": "^1.6.0"
 	},
 	"packageManager": "yarn@4.18.1"
