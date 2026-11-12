@@ -38,9 +38,10 @@ Workflow:
 1. Make changes
 2. Run `yarn changeset` to describe changes and bump type
 3. Commit the changeset file with your changes
-4. On release: `yarn changeset version` then `yarn changeset publish`
 
-Use `/changesets` skill for detailed guidance.
+Releases are automated. `.github/workflows/release.yml` runs after CI succeeds on `master`: `changesets/action` opens
+the version pull request while changesets are pending and publishes once that pull request merges. Do not run
+`yarn version` or `yarn release` locally.
 
 ## Notes
 
