@@ -14,9 +14,10 @@ jobs:
   release:
     name: "Release"
     runs-on: ubuntu-latest
+    # A pull request from a fork branch named master also matches the branch filter, so the CI run must come from a push.
     if: >-
       github.event_name == 'workflow_dispatch' ||
-      github.event.workflow_run.conclusion == 'success'
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
     permissions:
       id-token: write
       pull-requests: write
