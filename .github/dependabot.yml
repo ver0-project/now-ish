@@ -1,0 +1,16 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+    ignore:
+      # Version 2 renames the action inputs and requires Changesets 3. CI does not run the release workflow, so the
+      # automerge would merge that update untested.
+      - dependency-name: changesets/action
+        update-types:
+          - version-update:semver-major
