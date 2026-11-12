@@ -460,6 +460,29 @@ describe('now', () => {
 	});
 });
 
+describe('range of a Date', () => {
+	const ctx = {timezone: 'UTC'};
+	const lastSecond = new TZDate(8.64e15 - 1000, 'UTC');
+
+	it('throws a RangeError when rounding passes the last representable time', () => {
+		expect(() => units.get('y')!['round-up'](lastSecond, ctx)).toThrow(RangeError);
+	});
+
+	it('throws a RangeError when rounding passes the first representable time', () => {
+		const firstSecond = new TZDate(-8.64e15 + 1000, 'UTC');
+
+		expect(() => units.get('y')!['round-down'](firstSecond, ctx)).toThrow(RangeError);
+	});
+
+	it('throws a RangeError when an offset passes the last representable time', () => {
+		expect(() => units.get('s')!.add(lastSecond, 2, ctx)).toThrow(RangeError);
+	});
+
+	it('returns the time when the result stays in the range', () => {
+		expect(units.get('s')!['round-down'](lastSecond, ctx).getTime()).toBe(8.64e15 - 1000);
+	});
+});
+
 describe('timezone handling', () => {
 	const ctx = {timezone: 'America/New_York'};
 

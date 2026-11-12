@@ -127,21 +127,44 @@ const year: Unit = {
  * Default unit definitions for date-fns adapter.
  */
 export const units: ReadonlyMap<string, Unit> = new Map([
-	['ms', millisecond],
-	['s', second],
-	['m', minute],
-	['h', hour],
-	['d', day],
-	['w', week],
-	['mo', month],
-	['y', year],
+	['ms', withRangeCheck(millisecond)],
+	['s', withRangeCheck(second)],
+	['m', withRangeCheck(minute)],
+	['h', withRangeCheck(hour)],
+	['d', withRangeCheck(day)],
+	['w', withRangeCheck(week)],
+	['mo', withRangeCheck(month)],
+	['y', withRangeCheck(year)],
 ]);
+
+function assertInRange(time: Time): Time {
+	if (Number.isNaN(time.getTime())) {
+		throw new RangeError('time is outside the range of a Date');
+	}
+
+	return time;
+}
+
+function withRangeCheck(unit: Unit): Unit {
+	return {
+		name: unit.name,
+		add: (time, amount, ctx) => assertInRange(unit.add(time, amount, ctx)),
+		'round-up': (time, ctx) => assertInRange(unit['round-up'](time, ctx)),
+		'round-down': (time, ctx) => assertInRange(unit['round-down'](time, ctx)),
+	};
+}
 
 /**
  * Factory to create "now" as TZDate in the given timezone.
+ * @throws RangeError if the timezone is unknown
  */
 export function now(ctx: ParseContext<Timezone>): TZDate {
-	return TZDate.tz(ctx.timezone);
+	const time = TZDate.tz(ctx.timezone);
+	if (Number.isNaN(time.getTime())) {
+		throw new RangeError(`unknown timezone: '${ctx.timezone}'`);
+	}
+
+	return time;
 }
 
 /**

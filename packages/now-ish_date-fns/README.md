@@ -49,6 +49,11 @@ For the full expression syntax, see the [core package documentation](https://git
 
 Weeks follow ISO 8601 — they start on Monday.
 
+### Errors
+
+`parse` throws a `ParseError` (exported by `@ver0/now-ish`) for an expression it cannot parse. It throws a `RangeError`
+for an unknown timezone and for a result outside the range that a `Date` can hold.
+
 ### Custom configuration
 
 You can create a custom parser with a different default timezone, localized keywords, or additional units.
