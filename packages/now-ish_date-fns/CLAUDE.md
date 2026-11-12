@@ -21,6 +21,8 @@ date-fns adapter for `@ver0/now-ish`. Returns TZDate.
 - Second, minute, and hour rounding keeps the UTC offset of the input in the context timezone when the rounded
   wall-clock time exists at that offset — the result stays in the same pass of an hour that a clock change repeats. Day
   and larger units do not: a day starts at the first pass of midnight
+- `now` and the units in `units` never return an Invalid Date: `now` throws a `RangeError` for an unknown timezone,
+  and each unit throws one for a result outside the range of a `Date`
 
 ## Core Files
 

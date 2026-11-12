@@ -27,4 +27,12 @@ describe('parse', () => {
 		expect(down.getUTCHours()).toBe(0);
 		expect(up.getUTCHours()).toBe(23);
 	});
+
+	it('throws a RangeError for an unknown timezone', () => {
+		expect(() => parse('now', 'round-down', {timezone: 'Mars/Olympus'})).toThrow(RangeError);
+	});
+
+	it.each(['now+400000y', 'now-400000y'])('throws a RangeError when %s leaves the range of a Date', (expression) => {
+		expect(() => parse(expression)).toThrow(RangeError);
+	});
 });
