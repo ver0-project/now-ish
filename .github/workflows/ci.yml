@@ -9,6 +9,11 @@ on:
       - master
   workflow_dispatch:
 
+# A run on master is never cancelled: the Release workflow starts from its completion.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 permissions:
   contents: read
 
