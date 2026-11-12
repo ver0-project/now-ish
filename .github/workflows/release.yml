@@ -27,6 +27,9 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: master
+          # GitHub starts no workflow for a push or a pull request that the job token made, and the version pull
+          # request needs a CI run to pass the ci-ok check. The GH_TOKEN secret holds a personal access token.
+          token: ${{ secrets.GH_TOKEN }}
       - name: "Enable corepack"
         run: corepack enable
       - name: "Setup Node.js"
@@ -45,4 +48,4 @@ jobs:
           publish: yarn release
           version: yarn version
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
