@@ -48,7 +48,7 @@
 		"@ver0/now-ish_date-fns": "workspace:*",
 		"date-fns": "^4.1.0",
 		"rimraf": "^6.1.2",
-		"typescript": "^5.9.3"
+		"typescript": "^7.0.2"
 	},
 	"engines": {
 		"node": ">=18"

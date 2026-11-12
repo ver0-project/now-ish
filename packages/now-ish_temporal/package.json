@@ -48,7 +48,7 @@
 	},
 	"devDependencies": {
 		"rimraf": "^6.1.2",
-		"typescript": "^5.9.3"
+		"typescript": "^7.0.2"
 	},
 	"peerDependencies": {
 		"@ver0/now-ish": "workspace:*"
