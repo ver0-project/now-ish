@@ -62,6 +62,20 @@ describe('parseStructure', () => {
 	test.each(['', 'foo bar', '/d', 'now/d/mo'])('throws on %s', (input) => {
 		expect(() => parseStructure(input)).toThrow(ParseError);
 	});
+
+	test('accepts the largest safe integer as the amount', () => {
+		expect(parseStructure('now-9007199254740991d').offset).toEqual({amount: -9_007_199_254_740_991, unit: 'd'});
+	});
+
+	test.each(['9007199254740992', '99999999999999999999'])(
+		'rejects the amount %s as an invalid offset value',
+		(digits) => {
+			expect(() => parseStructure(`now+${digits}d`)).toThrow(ParseError);
+			expect(() => parseStructure(`now+${digits}d`)).toThrow(
+				expect.objectContaining({kind: 'invalid-value', position: 'offset', value: digits}),
+			);
+		},
+	);
 });
 
 describe('createParser', () => {
