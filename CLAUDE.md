@@ -4,11 +4,11 @@ Grafana-style relative time expression parser.
 
 ## Packages
 
-| Package | Description |
-|---------|-------------|
-| `@ver0/now-ish` | Core parser, types. Adapter-agnostic. |
-| `@ver0/now-ish_date-fns` | date-fns adapter (TZDate) |
-| `@ver0/now-ish_temporal` | Temporal adapter (ZonedDateTime) |
+| Package                  | Description                           |
+| ------------------------ | ------------------------------------- |
+| `@ver0/now-ish`          | Core parser, types. Adapter-agnostic. |
+| `@ver0/now-ish_date-fns` | date-fns adapter (TZDate)             |
+| `@ver0/now-ish_temporal` | Temporal adapter (ZonedDateTime)      |
 
 ## Expression Syntax
 
@@ -38,6 +38,7 @@ yarn workspace <package-name> <script>    # run one package's script
 Uses [Changesets](https://github.com/changesets/changesets) for versioning.
 
 Workflow:
+
 1. Make changes
 2. Run `yarn changeset` to describe changes and bump type
 3. Commit the changeset file with your changes

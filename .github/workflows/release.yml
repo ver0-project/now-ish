@@ -1,8 +1,8 @@
-name: "Release"
+name: 'Release'
 
 on:
   workflow_run:
-    workflows: ["CI"]
+    workflows: ['CI']
     types: [completed]
     branches: [master]
   workflow_dispatch:
@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   release:
-    name: "Release"
+    name: 'Release'
     runs-on: ubuntu-latest
     # A pull request from a fork branch named master also matches the branch filter, so the CI run must come from a push.
     if: >-
@@ -23,26 +23,26 @@ jobs:
       pull-requests: write
       contents: write
     steps:
-      - name: "Checkout"
+      - name: 'Checkout'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: master
           # GitHub starts no workflow for a push or a pull request that the job token made, and the version pull
           # request needs a CI run to pass the ci-ok check. The GH_TOKEN secret holds a personal access token.
           token: ${{ secrets.GH_TOKEN }}
-      - name: "Enable corepack"
+      - name: 'Enable corepack'
         run: corepack enable
-      - name: "Setup Node.js"
+      - name: 'Setup Node.js'
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
           cache: yarn
           registry-url: https://registry.npmjs.org
-      - name: "Install dependencies"
+      - name: 'Install dependencies'
         run: yarn install --immutable
-      - name: "Build"
+      - name: 'Build'
         run: yarn workspaces foreach -A run build
-      - name: "Create Release PR or Publish"
+      - name: 'Create Release PR or Publish'
         uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1.9.0
         with:
           publish: yarn release
