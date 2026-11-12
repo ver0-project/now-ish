@@ -30,16 +30,11 @@ jobs:
           # GitHub starts no workflow for a push or a pull request that the job token made, and the version pull
           # request needs a CI run to pass the ci-ok check. The GH_TOKEN secret holds a personal access token.
           token: ${{ secrets.GH_TOKEN }}
-      - name: 'Enable corepack'
-        run: corepack enable
-      - name: 'Setup Node.js'
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      # No dependency cache: a pull request branch can write the Actions cache, and this job publishes.
+      - name: 'Setup Vite+ and install dependencies'
+        uses: voidzero-dev/setup-vp@cab1ab9eaff52d4857875f4f2c016e36af8f2c76 # v1.22.0
         with:
-          node-version: 24
-          cache: yarn
-          registry-url: https://registry.npmjs.org
-      - name: 'Install dependencies'
-        run: yarn install --immutable
+          node-version: 26
       - name: 'Build'
         run: yarn workspaces foreach -A run build
       - name: 'Create Release PR or Publish'
