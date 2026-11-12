@@ -33,6 +33,14 @@ yarn workspaces foreach -A run lint       # lint all packages
 yarn workspace <package-name> <script>    # run one package's script
 ```
 
+Vite+ (`vp`) is the toolchain. The root `vite.config.ts` holds the oxfmt options and the oxlint rules for every package.
+Run these from the repository root:
+
+```bash
+vp check          # format check and lint, whole repository
+vp fmt            # format, whole repository
+```
+
 ## Versioning
 
 Uses [Changesets](https://github.com/changesets/changesets) for versioning.
@@ -50,5 +58,6 @@ the version pull request while changesets are pending and publishes once that pu
 ## Notes
 
 - Uses Yarn. Do not use npm.
+- Test files import the test API from `vite-plus/test`. No package depends on `vitest`.
 - Structural or significant changes must be documented in the
   respective package's `CLAUDE.md`.
