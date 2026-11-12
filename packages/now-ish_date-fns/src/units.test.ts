@@ -490,3 +490,95 @@ describe('timezone handling', () => {
 		expect(endOfWeek.getHours()).toBe(23);
 	});
 });
+
+type TransitionCase = {
+	readonly name: string;
+	readonly unit: string;
+	readonly input: string;
+	readonly down: string;
+	readonly up: string;
+};
+
+describe('clock changes (Europe/Berlin)', () => {
+	const ctx = {timezone: 'Europe/Berlin'};
+
+	const cases: TransitionCase[] = [
+		{
+			name: 'second in the first pass of the repeated hour',
+			unit: 's',
+			input: '2024-10-27T02:30:20.500+02:00',
+			down: '2024-10-27T02:30:20.000+02:00',
+			up: '2024-10-27T02:30:20.999+02:00',
+		},
+		{
+			name: 'second in the second pass of the repeated hour',
+			unit: 's',
+			input: '2024-10-27T02:30:20.500+01:00',
+			down: '2024-10-27T02:30:20.000+01:00',
+			up: '2024-10-27T02:30:20.999+01:00',
+		},
+		{
+			name: 'minute in the second pass of the repeated hour',
+			unit: 'm',
+			input: '2024-10-27T02:30:20.500+01:00',
+			down: '2024-10-27T02:30:00.000+01:00',
+			up: '2024-10-27T02:30:59.999+01:00',
+		},
+		{
+			name: 'hour in the first pass of the repeated hour',
+			unit: 'h',
+			input: '2024-10-27T02:30:20.500+02:00',
+			down: '2024-10-27T02:00:00.000+02:00',
+			up: '2024-10-27T02:59:59.999+02:00',
+		},
+		{
+			name: 'hour in the second pass of the repeated hour',
+			unit: 'h',
+			input: '2024-10-27T02:30:20.500+01:00',
+			down: '2024-10-27T02:00:00.000+01:00',
+			up: '2024-10-27T02:59:59.999+01:00',
+		},
+		{
+			name: 'hour after the skipped hour',
+			unit: 'h',
+			input: '2024-03-31T03:30:00.000+02:00',
+			down: '2024-03-31T03:00:00.000+02:00',
+			up: '2024-03-31T03:59:59.999+02:00',
+		},
+		{
+			name: 'day with the skipped hour',
+			unit: 'd',
+			input: '2024-03-31T12:00:00.000+02:00',
+			down: '2024-03-31T00:00:00.000+01:00',
+			up: '2024-03-31T23:59:59.999+02:00',
+		},
+		{
+			name: 'day with the repeated hour',
+			unit: 'd',
+			input: '2024-10-27T12:00:00.000+01:00',
+			down: '2024-10-27T00:00:00.000+02:00',
+			up: '2024-10-27T23:59:59.999+01:00',
+		},
+	];
+
+	it.each(cases)('rounds the $name', (tc: TransitionCase) => {
+		const unit = units.get(tc.unit)!;
+		const time = new TZDate(tc.input, 'Europe/Berlin');
+
+		expect(unit['round-down'](time, ctx).toISOString()).toBe(tc.down);
+		expect(unit['round-up'](time, ctx).toISOString()).toBe(tc.up);
+	});
+
+	it('rounds the hour of a time from another zone in the context zone', () => {
+		const time = new TZDate('2024-10-27T01:30:20.500Z', 'UTC');
+
+		expect(units.get('h')!['round-down'](time, ctx).toISOString()).toBe('2024-10-27T02:00:00.000+01:00');
+	});
+
+	it('rounds the hour that a half-hour clock change cuts to its one wall-clock start', () => {
+		const zone = {timezone: 'Australia/Lord_Howe'};
+		const time = new TZDate('2024-04-07T01:45:00.000+10:30', 'Australia/Lord_Howe');
+
+		expect(units.get('h')!['round-down'](time, zone).toISOString()).toBe('2024-04-07T01:00:00.000+11:00');
+	});
+});
