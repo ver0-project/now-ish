@@ -21,6 +21,9 @@
 		"type": "git",
 		"url": "https://github.com/ver0-project/now-ish"
 	},
+	"files": [
+		"dist"
+	],
 	"type": "module",
 	"sideEffects": false,
 	"main": "./dist/index.js",
@@ -35,8 +38,7 @@
 		"access": "public"
 	},
 	"scripts": {
-		"build": "yarn build:clean && yarn tsc -p tsconfig.build.json",
-		"build:clean": "rimraf dist",
+		"build": "vp pack",
 		"typecheck": "tsc --noEmit",
 		"test": "vp test",
 		"test:coverage": "vp test --coverage",
@@ -48,11 +50,11 @@
 		"date-fns": "^4.1.0"
 	},
 	"devDependencies": {
-		"rimraf": "^6.1.2",
+		"@ver0/now-ish": "workspace:*",
 		"typescript": "^7.0.2"
 	},
 	"peerDependencies": {
-		"@ver0/now-ish": "workspace:*"
+		"@ver0/now-ish": "^1.0.0"
 	},
 	"engines": {
 		"node": ">=18"
