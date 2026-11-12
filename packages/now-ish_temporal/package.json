@@ -38,8 +38,8 @@
 		"build": "yarn build:clean && yarn tsc -p tsconfig.build.json",
 		"build:clean": "rimraf dist",
 		"typecheck": "tsc --noEmit",
-		"test": "vitest run",
-		"test:coverage": "vitest run --coverage",
+		"test": "vp test",
+		"test:coverage": "vp test --coverage",
 		"lint": "vp lint",
 		"lint:fix": "vp lint --fix"
 	},
@@ -47,10 +47,8 @@
 		"@js-temporal/polyfill": "^0.5.1"
 	},
 	"devDependencies": {
-		"@vitest/coverage-v8": "^4.0.18",
 		"rimraf": "^6.1.2",
-		"typescript": "^5.9.3",
-		"vitest": "^4.1.11"
+		"typescript": "^5.9.3"
 	},
 	"peerDependencies": {
 		"@ver0/now-ish": "workspace:*"

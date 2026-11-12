@@ -1,6 +1,6 @@
 import type {Time, Timezone} from '@ver0/now-ish_date-fns';
 import {now, nowAliases, units} from '@ver0/now-ish_date-fns';
-import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest';
+import {afterEach, beforeEach, describe, expect, test, vi} from 'vite-plus/test';
 import type {Parser, RoundingDirection} from './parse.js';
 import {createParser, ParseError, parseStructure} from './parse.js';
 

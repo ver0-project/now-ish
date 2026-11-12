@@ -1,5 +1,5 @@
 import {TZDate} from '@date-fns/tz';
-import {describe, it, expect, vi, afterEach} from 'vitest';
+import {describe, it, expect, vi, afterEach} from 'vite-plus/test';
 import {units, now} from './units.js';
 
 /**
