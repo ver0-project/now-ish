@@ -1,4 +1,4 @@
-import {Temporal} from '@js-temporal/polyfill';
+import {Temporal as TemporalPolyfill} from '@js-temporal/polyfill';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vite-plus/test';
 import {parse} from './index.js';
 
@@ -27,5 +27,25 @@ describe('parse', () => {
 
 		expect(down.hour).toBe(0);
 		expect(up.hour).toBe(23);
+	});
+});
+
+describe('Temporal implementation', () => {
+	afterEach(() => {
+		vi.unstubAllGlobals();
+	});
+
+	it('returns the objects of the runtime Temporal', () => {
+		expect(parse('now-1d/d')).toBeInstanceOf(Temporal.ZonedDateTime);
+	});
+
+	it('returns the objects of the polyfill on a runtime without Temporal', () => {
+		vi.stubGlobal('Temporal', undefined);
+
+		const result = parse('now-1d/d', 'round-up', {timezone: 'Asia/Tokyo'});
+
+		expect(result).toBeInstanceOf(TemporalPolyfill.ZonedDateTime);
+		expect(result.timeZoneId).toBe('Asia/Tokyo');
+		expect(result.toPlainTime().toString()).toBe('23:59:59.999999999');
 	});
 });

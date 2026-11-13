@@ -1,9 +1,9 @@
-import {Temporal} from '@js-temporal/polyfill';
+import {Temporal as TemporalPolyfill} from '@js-temporal/polyfill';
 import type {ParseContext, UnitDefinition} from '@ver0/now-ish';
 
 /**
  * Temporal adapter timezone type.
- * Accepts IANA timezone strings or Temporal.TimeZone objects.
+ * Accepts an IANA timezone string or a ZonedDateTime, whose timezone is used.
  */
 export type Timezone = Temporal.TimeZoneLike;
 
@@ -105,9 +105,13 @@ export const units: ReadonlyMap<string, Unit> = new Map([
 
 /**
  * Factory to create "now" as ZonedDateTime in given timezone.
+ * Uses the Temporal of the runtime, and `@js-temporal/polyfill` on a runtime without one.
  */
 export function now(ctx: ParseContext<Timezone>): Temporal.ZonedDateTime {
-	return Temporal.Now.zonedDateTimeISO(ctx.timezone);
+	// SAFETY: the polyfill implements the Temporal API of the specification; only its type declarations differ
+	// oxlint-disable-next-line typescript/no-unsafe-type-assertion -- see SAFETY above
+	const temporal = globalThis.Temporal ?? (TemporalPolyfill as typeof Temporal);
+	return temporal.Now.zonedDateTimeISO(ctx.timezone);
 }
 
 /**

@@ -24,7 +24,13 @@ npm install @ver0/now-ish_temporal @ver0/now-ish
 
 > `@ver0/now-ish` is a peer dependency.
 
-This package uses `@js-temporal/polyfill` until Temporal becomes available natively in JavaScript engines.
+The parser returns the `Temporal` objects of the runtime. On a runtime without `Temporal`, it returns the objects of
+`@js-temporal/polyfill`, which is installed with this package.
+
+The types are the standard `Temporal` types of TypeScript 6.0 and later (the `esnext` lib). The type declarations of the
+polyfill are not assignable to them, so a function that is typed with the polyfill does not accept a result. On a
+runtime without `Temporal` the result is a polyfill object, and a type assertion is correct there. On a runtime with
+`Temporal` it is a native object, which the polyfill does not accept.
 
 ### How to use
 
@@ -97,8 +103,6 @@ parse('jetzt-7t'); // 7 days ago
 
 The [TC39 Temporal proposal](https://tc39.es/proposal-temporal/docs/) addresses long-standing issues with JavaScript's
 `Date` object: immutability, nanosecond precision, first-class timezone support, and unambiguous DST handling.
-
-While Temporal is not yet natively available, the polyfill provides full functionality today.
 
 ### Related
 

@@ -1,4 +1,3 @@
-import {Temporal} from '@js-temporal/polyfill';
 import {describe, it, expect, vi, afterEach} from 'vite-plus/test';
 import {units, now} from './units.js';
 
