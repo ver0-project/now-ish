@@ -19,6 +19,10 @@ Temporal API adapter for `@ver0/now-ish`. Returns ZonedDateTime.
 - Week starts Monday (ISO 8601)
 - Day rounding uses `startOfDay()` to handle DST correctly
 - Round-up returns last nanosecond of period
+- `now` is the only code that selects a Temporal implementation: `globalThis.Temporal` at call time, the polyfill when
+  the runtime has none. The units call only methods of the time they receive
+- The exported types are the standard `Temporal` types (TypeScript `esnext` lib), not the types of the polyfill — the
+  two sets of declarations are not assignable to each other
 
 ## Core Files
 
@@ -27,7 +31,7 @@ Temporal API adapter for `@ver0/now-ish`. Returns ZonedDateTime.
 
 ## Dependencies
 
-- `@js-temporal/polyfill` — Temporal API polyfill
+- `@js-temporal/polyfill` — fallback for a runtime without `Temporal`
 - `@ver0/now-ish` — core parser (peer dependency)
 
 ## Commands
