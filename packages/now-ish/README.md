@@ -25,9 +25,11 @@ The expression syntax is simple enough that you can expose it directly to your u
 or dropdowns with predefined ranges, let users type `now-7d` for "last 7 days" or `now/mo` for "since start of month".
 It's readable, compact, and powerful enough for complex ranges like "start of next month" (`now/mo+1mo/mo`).
 
-The syntax is compatible with
+The syntax follows
 [Grafana's relative time expressions](https://grafana.com/docs/grafana/latest/dashboards/use-dashboards/#time-units-and-relative-ranges),
-so if you're building dashboards or analytics tools, your users may already be familiar with it.
+so if you're building dashboards or analytics tools, your users may already be familiar with it. The unit names of the
+adapters differ from Grafana in two places: a month is `mo` where Grafana has `M`, and there is no quarter unit. A
+custom parser can define both.
 
 The parser is fully extensible. You can define custom units like fiscal quarters (`fq`) or business days (`bd`) —
 whatever makes sense for your domain. You can also localize both the `now` keyword and unit names, enabling fully
@@ -89,12 +91,24 @@ See the [date-fns adapter source](https://github.com/ver0-project/now-ish/tree/m
 a complete example.
 
 ```typescript
-import {createParser} from '@ver0/now-ish';
+import {createParser, type UnitDefinition} from '@ver0/now-ish';
+
+const DAY = 86_400_000;
+
+// A UTC day on a plain Date. The timezone in the context is not used.
+const day: UnitDefinition<Date, string> = {
+	name: 'day',
+	add: (time, amount) => new Date(time.getTime() + amount * DAY),
+	'round-down': (time) => new Date(Math.floor(time.getTime() / DAY) * DAY),
+	'round-up': (time) => new Date(Math.floor(time.getTime() / DAY) * DAY + DAY - 1),
+};
 
 const parse = createParser({
-	now: (ctx) => {},
-	units: new Map(),
+	now: () => new Date(),
+	units: new Map([['d', day]]),
 	timezone: 'UTC',
 	nowAliases: ['now'],
 });
+
+parse('now-7d/d'); // midnight UTC, seven days ago
 ```
