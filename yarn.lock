@@ -1082,7 +1082,7 @@ __metadata:
     date-fns: "npm:^4.1.0"
     typescript: "npm:^7.0.2"
   peerDependencies:
-    "@ver0/now-ish": ^1.0.0
+    "@ver0/now-ish": ^1.1.0
   languageName: unknown
   linkType: soft
 
@@ -1094,7 +1094,7 @@ __metadata:
     "@ver0/now-ish": "workspace:*"
     typescript: "npm:^7.0.2"
   peerDependencies:
-    "@ver0/now-ish": ^1.0.0
+    "@ver0/now-ish": ^1.1.0
   languageName: unknown
   linkType: soft
 
